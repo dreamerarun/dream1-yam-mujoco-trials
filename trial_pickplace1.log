@@ -1,0 +1,138 @@
+[budget] est. spend <= $5.045 of $5.60 (100.9 of 112.0 min of runtime)
+grasp boost: 4 finger actuators at +-80 N, 286 finger pads at friction 8.0
+object grip: 21 fruit geoms at friction 4.0
+
+===== [02:36:13] pick up the banana and put it in the bowl · 180s · GUI =====
+  Running: pick up the banana and put it in the bowl · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Dream · 3.64s RTT · 1 requests · 0 actions
+  Dream · 0.93s RTT · 2 requests · 48 actions
+  Dream · 0.95s RTT · 3 requests · 96 actions
+  Dream · 0.90s RTT · 4 requests · 144 actions
+  Dream · 1.05s RTT · 5 requests · 192 actions
+  Dream · 0.95s RTT · 6 requests · 240 actions
+  Dream · 1.92s RTT · 7 requests · 288 actions
+  Dream · 1.41s RTT · 8 requests · 336 actions
+  Dream · 1.17s RTT · 9 requests · 384 actions
+  Dream · 1.21s RTT · 10 requests · 432 actions
+  Dream · 2.11s RTT · 11 requests · 480 actions
+  Dream · 1.76s RTT · 12 requests · 528 actions
+  Dream · 0.93s RTT · 13 requests · 576 actions
+  Dream · 1.31s RTT · 14 requests · 624 actions
+  Dream · 1.43s RTT · 15 requests · 672 actions
+  Dream · 1.27s RTT · 16 requests · 720 actions
+  Dream · 2.06s RTT · 17 requests · 768 actions
+  Dream · 0.76s RTT · 18 requests · 816 actions
+  Dream · 1.28s RTT · 19 requests · 864 actions
+  Dream · 1.59s RTT · 20 requests · 912 actions
+  Dream · 0.72s RTT · 21 requests · 960 actions
+  Dream · 1.36s RTT · 22 requests · 1008 actions
+  Dream · 0.86s RTT · 23 requests · 1056 actions
+  Dream · 0.95s RTT · 24 requests · 1104 actions
+  Dream · 3.34s RTT · 25 requests · 1152 actions
+  Dream · 1.01s RTT · 26 requests · 1200 actions
+  Dream · 2.30s RTT · 27 requests · 1248 actions
+  Dream · 1.57s RTT · 28 requests · 1296 actions
+  Dream · 1.76s RTT · 29 requests · 1344 actions
+  Dream · 0.98s RTT · 30 requests · 1392 actions
+  Dream · 0.93s RTT · 31 requests · 1440 actions
+  Dream · 0.92s RTT · 32 requests · 1488 actions
+  Dream · 0.78s RTT · 33 requests · 1536 actions
+  Dream · 1.07s RTT · 34 requests · 1584 actions
+  Dream · 0.86s RTT · 35 requests · 1632 actions
+  Dream · 0.96s RTT · 36 requests · 1680 actions
+  Dream · 0.76s RTT · 37 requests · 1728 actions
+  Dream · 0.76s RTT · 38 requests · 1776 actions
+  Dream · 0.78s RTT · 39 requests · 1824 actions
+  Dream · 0.73s RTT · 40 requests · 1872 actions
+  Dream · 1.69s RTT · 41 requests · 1920 actions
+  Dream · 1.17s RTT · 42 requests · 1968 actions
+  Dream · 0.87s RTT · 43 requests · 2016 actions
+  Dream · 1.72s RTT · 44 requests · 2064 actions
+  Dream · 1.23s RTT · 45 requests · 2112 actions
+  Dream · 1.32s RTT · 46 requests · 2160 actions
+  Finished · 2205 actions · 46 requests · average RTT 1.31s · limits adjusted (details: --verbose)
+  grasp: left finger-object contacts 0, right 4626 · touched banana
+  grip approach: left->apple closest 23.4 cm at gripper z 0.928 m | left->orange closest 36.1 cm at gripper z 0.928 m | left->banana closest 32.8 cm at gripper z 0.969 m | right->apple closest 20.9 cm at gripper z 0.851 m | right->orange closest 12.4 cm at gripper z 0.861 m | right->banana closest 3.8 cm at gripper z 0.806 m
+  SCRIPTED ASSIST: descent 3 mm applied 0x left / 527x right | grip latched False left / True right (0/2072 steps held shut)
+  FAIL: banana -> bowl: xy 7.9 cm (limit 6), dz +5.8 cm, moved 10.1 cm
+  elapsed 182s · video saved · proof saved · gui shot saved
+
+===== [02:39:16] pick up the apple and put it on the plate · 180s · GUI =====
+  Running: pick up the apple and put it on the plate · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Viewer reset (Backspace/Delete) is off during a run. Stop the run first: Ctrl-C, /reset_robot (arms home) or /reset (whole scene); click the terminal to type a task.
+  Dream · 4.02s RTT · 1 requests · 0 actions
+  Dream · 1.39s RTT · 2 requests · 48 actions
+  Dream · 1.22s RTT · 3 requests · 96 actions
+  Dream · 1.03s RTT · 4 requests · 144 actions
+  Dream · 0.93s RTT · 5 requests · 192 actions
+  Dream · 1.52s RTT · 6 requests · 240 actions
+  Dream · 1.18s RTT · 7 requests · 288 actions
+  Dream · 1.07s RTT · 8 requests · 336 actions
+  Dream · 1.39s RTT · 9 requests · 384 actions
+  Dream · 2.02s RTT · 10 requests · 432 actions
+  Dream · 2.15s RTT · 11 requests · 480 actions
+  Dream · 1.08s RTT · 12 requests · 528 actions
+  Dream · 0.92s RTT · 13 requests · 576 actions
+  Dream · 1.25s RTT · 14 requests · 624 actions
+  Dream · 1.01s RTT · 15 requests · 672 actions
+  Dream · 0.99s RTT · 16 requests · 720 actions
+  Dream · 0.98s RTT · 17 requests · 768 actions
+  Dream · 0.97s RTT · 18 requests · 816 actions
+  Dream · 0.99s RTT · 19 requests · 864 actions
+  Dream · 1.34s RTT · 20 requests · 912 actions
+  Dream · 1.01s RTT · 21 requests · 960 actions
+  Dream · 0.91s RTT · 22 requests · 1008 actions
+  Dream · 2.09s RTT · 23 requests · 1056 actions
+  Dream · 1.74s RTT · 24 requests · 1104 actions
+  Dream · 3.35s RTT · 25 requests · 1152 actions
+  Dream · 1.22s RTT · 26 requests · 1200 actions
+  Dream · 1.45s RTT · 27 requests · 1248 actions
+  Dream · 1.17s RTT · 28 requests · 1296 actions
+  Dream · 1.41s RTT · 29 requests · 1344 actions
+  Dream · 1.70s RTT · 30 requests · 1392 actions
+  Dream · 1.62s RTT · 31 requests · 1440 actions
+  Dream · 1.44s RTT · 32 requests · 1488 actions
+  Dream · 1.73s RTT · 33 requests · 1536 actions
+  Dream · 1.59s RTT · 34 requests · 1584 actions
+  Dream · 1.35s RTT · 35 requests · 1632 actions
+  Dream · 1.18s RTT · 36 requests · 1680 actions
+  Dream · 1.17s RTT · 37 requests · 1728 actions
+  Dream · 1.02s RTT · 38 requests · 1776 actions
+  Dream · 1.02s RTT · 39 requests · 1824 actions
+  Dream · 1.01s RTT · 40 requests · 1872 actions
+  Dream · 1.10s RTT · 41 requests · 1920 actions
+  Dream · 1.30s RTT · 42 requests · 1968 actions
+  Dream · 1.07s RTT · 43 requests · 2016 actions
+  Finished · 2064 actions · 43 requests · average RTT 1.40s · limits adjusted (details: --verbose)
+  grasp: left finger-object contacts 0, right 0 · touched nothing
+  SCRIPTED ASSIST: descent 3 mm applied 0x left / 0x right | grip latched True left / False right (1919/0 steps held shut)
+  FAIL: apple -> plate: xy 21.4 cm (limit 7), dz +3.8 cm, moved 21.8 cm
+  elapsed 182s · video saved · proof saved · gui shot saved
+
+===== SUMMARY =====
+[02:36:13] pick up the banana and put it in the bowl
+    verdict: FAIL
+    banana -> bowl: xy 7.9 cm (limit 6), dz +5.8 cm, moved 10.1 cm
+    grasp contacts while closing: left 0, right 4626, objects banana
+    grip approach: left->apple closest 23.4 cm at gripper z 0.928 m | left->orange closest 36.1 cm at gripper z 0.928 m | left->banana closest 32.8 cm at gripper z 0.969 m | right->apple closest 20.9 cm at gripper z 0.851 m | right->orange closest 12.4 cm at gripper z 0.861 m | right->banana closest 3.8 cm at gripper z 0.806 m
+    SCRIPTED ASSIST: descent 3 mm applied 0x left / 527x right | grip latched False left / True right (0/2072 steps held shut)
+    elapsed: 182s (GUI), actions 48/request, seconds 180
+    video: yam_check/video/pick_up_the_banana_and_put_it_in_the_bowl_1_pickplace1.mp4
+    proof: yam_check/trials/pick_up_the_banana_and_put_it_in_the_bowl_1_pickplace1_proof.png
+
+[02:39:16] pick up the apple and put it on the plate
+    verdict: FAIL
+    apple -> plate: xy 21.4 cm (limit 7), dz +3.8 cm, moved 21.8 cm
+    grasp contacts while closing: left 0, right 0, objects nothing
+    grip approach: no distance recorded
+    SCRIPTED ASSIST: descent 3 mm applied 0x left / 0x right | grip latched True left / False right (1919/0 steps held shut)
+    elapsed: 182s (GUI), actions 48/request, seconds 180
+    video: yam_check/video/pick_up_the_apple_and_put_it_on_the_plate_1_pickplace1.mp4
+    proof: yam_check/trials/pick_up_the_apple_and_put_it_on_the_plate_1_pickplace1_proof.png
+
+
+[budget] est. spend <= $5.352 of $5.60 (107.0 of 112.0 min of runtime)
