@@ -1,0 +1,89 @@
+[budget] est. spend <= $4.309 of $5.00 (86.2 of 100.0 min of runtime)
+grasp boost: 4 finger actuators at +-60 N, 0 finger pads at friction 4.0
+
+===== [01:53:12] pick up the banana, then pick up the apple · 240s · GUI =====
+  Running: pick up the banana, then pick up the apple · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Dream · 3.35s RTT · 1 requests · 0 actions
+  Dream · 1.23s RTT · 2 requests · 48 actions
+  Dream · 1.39s RTT · 3 requests · 96 actions
+  Dream · 0.80s RTT · 4 requests · 144 actions
+  Dream · 0.86s RTT · 5 requests · 192 actions
+  Dream · 0.84s RTT · 6 requests · 240 actions
+  Dream · 1.23s RTT · 7 requests · 288 actions
+  Dream · 1.64s RTT · 8 requests · 336 actions
+  Dream · 1.56s RTT · 9 requests · 384 actions
+  Dream · 1.30s RTT · 10 requests · 432 actions
+  Dream · 2.25s RTT · 11 requests · 480 actions
+  Dream · 1.07s RTT · 12 requests · 528 actions
+  Dream · 1.02s RTT · 13 requests · 576 actions
+  Dream · 1.59s RTT · 14 requests · 624 actions
+  Dream · 1.05s RTT · 15 requests · 672 actions
+  Dream · 1.40s RTT · 16 requests · 720 actions
+  Dream · 1.07s RTT · 17 requests · 768 actions
+  Dream · 1.36s RTT · 18 requests · 816 actions
+  Dream · 0.96s RTT · 19 requests · 864 actions
+  Dream · 1.52s RTT · 20 requests · 912 actions
+  Dream · 1.13s RTT · 21 requests · 960 actions
+  Dream · 1.75s RTT · 22 requests · 1008 actions
+  Dream · 1.61s RTT · 23 requests · 1056 actions
+  Dream · 1.70s RTT · 24 requests · 1104 actions
+  Dream · 1.43s RTT · 25 requests · 1152 actions
+  Dream · 1.49s RTT · 26 requests · 1200 actions
+  Dream · 0.87s RTT · 27 requests · 1248 actions
+  Dream · 1.57s RTT · 28 requests · 1296 actions
+  Dream · 1.55s RTT · 29 requests · 1344 actions
+  Dream · 1.32s RTT · 30 requests · 1392 actions
+  Dream · 1.66s RTT · 31 requests · 1440 actions
+  Dream · 1.59s RTT · 32 requests · 1488 actions
+  Dream · 1.40s RTT · 33 requests · 1536 actions
+  Dream · 2.06s RTT · 34 requests · 1584 actions
+  Dream · 0.96s RTT · 35 requests · 1632 actions
+  Dream · 1.10s RTT · 36 requests · 1680 actions
+  Dream · 1.10s RTT · 37 requests · 1728 actions
+  Dream · 1.11s RTT · 38 requests · 1776 actions
+  Dream · 0.98s RTT · 39 requests · 1824 actions
+  Dream · 1.09s RTT · 40 requests · 1872 actions
+  Dream · 1.53s RTT · 41 requests · 1920 actions
+  Dream · 0.74s RTT · 42 requests · 1968 actions
+  Dream · 1.34s RTT · 43 requests · 2016 actions
+  Dream · 1.00s RTT · 44 requests · 2064 actions
+  Dream · 0.74s RTT · 45 requests · 2112 actions
+  Dream · 0.85s RTT · 46 requests · 2160 actions
+  Dream · 1.25s RTT · 47 requests · 2208 actions
+  Dream · 1.01s RTT · 48 requests · 2256 actions
+  Dream · 0.97s RTT · 49 requests · 2304 actions
+  Dream · 0.92s RTT · 50 requests · 2352 actions
+  Dream · 1.11s RTT · 51 requests · 2400 actions
+  Dream · 1.11s RTT · 52 requests · 2448 actions
+  Dream · 0.75s RTT · 53 requests · 2496 actions
+  Dream · 0.57s RTT · 54 requests · 2544 actions
+  Dream · 0.92s RTT · 55 requests · 2592 actions
+  Dream · 1.21s RTT · 56 requests · 2640 actions
+  Dream · 1.29s RTT · 57 requests · 2688 actions
+  Dream · 1.01s RTT · 58 requests · 2736 actions
+  Dream · 0.80s RTT · 59 requests · 2784 actions
+  Dream · 0.86s RTT · 60 requests · 2832 actions
+  Dream · 1.33s RTT · 61 requests · 2880 actions
+  Dream · 0.89s RTT · 62 requests · 2928 actions
+  Dream · 1.31s RTT · 63 requests · 2976 actions
+  Dream · 1.59s RTT · 64 requests · 3024 actions
+  Dream · 1.15s RTT · 65 requests · 3072 actions
+  Finished · 3120 actions · 65 requests · average RTT 1.25s · limits adjusted (details: --verbose)
+  grasp: left finger-object contacts 0, right 0 · touched nothing
+  FAIL: apple: dz +0.1 cm (needs >5), xy 10.5 cm, not lifted; banana: dz -1.6 cm (needs >5), xy 9.7 cm, not lifted
+  elapsed 242s · video saved · proof saved · gui shot saved
+
+===== SUMMARY =====
+[01:53:12] pick up the banana, then pick up the apple
+    verdict: FAIL
+    apple: dz +0.1 cm (needs >5), xy 10.5 cm, not lifted; banana: dz -1.6 cm (needs >5), xy 9.7 cm, not lifted
+    grasp contacts while closing: left 0, right 0, objects nothing
+    grip approach: no distance recorded
+    elapsed: 242s (GUI), actions 48/request, seconds 240
+    video: yam_check/video/pick_up_the_banana_then_pick_up_the_apple_1_pick3.mp4
+    proof: yam_check/trials/pick_up_the_banana_then_pick_up_the_apple_1_pick3_proof.png
+
+
+[budget] est. spend <= $4.512 of $5.00 (90.2 of 100.0 min of runtime)
