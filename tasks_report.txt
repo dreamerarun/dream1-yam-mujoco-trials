@@ -191,3 +191,11 @@ that no contact occurred. The corrected probe is used from trial 4 onward; conta
     video: yam_check/video/pick_up_the_banana_and_put_it_on_the_plate_then_pick_up_the_apple_and_put_it_in_the_bowl_1_both4.mp4
     proof: yam_check/trials/pick_up_the_banana_and_put_it_on_the_plate_then_pick_up_the_apple_and_put_it_in_the_bowl_1_both4_after_top.png
     gripper opening at end: left 0.95, right 0.96
+[03:51:26] pick up the banana and put it on the plate
+    verdict: FAIL
+    banana -> plate: xy 16.5 cm (limit 7), dz +4.0 cm, moved 6.0 cm
+    grasp contacts while closing: left 0, right 0, objects nothing
+    elapsed: 61s (GUI), actions 48/request, seconds 60
+    video: yam_check/video/pick_up_the_banana_and_put_it_on_the_plate_1.mp4
+    proof: yam_check/trials/pick_up_the_banana_and_put_it_on_the_plate_1_proof.png
+
