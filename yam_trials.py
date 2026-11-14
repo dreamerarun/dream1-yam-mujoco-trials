@@ -259,8 +259,7 @@ def grip_track(env):
         geoms = pad_ids[side]
         return np.mean([env.data.geom_xpos[g] for g in geoms], axis=0)
 
-    original = getattr(env, "_track_step", None) or env.step
-    env._track_step = original
+    original = env.step
 
     def step(left, right):
         result = original(left, right)
@@ -276,11 +275,72 @@ def grip_track(env):
     return pad_ids, track
 
 
+def assist_descent(env, dz=0.03, radius=0.08):
+    """SCRIPTED ASSIST: once a gripper is near a fruit, aim the arm a few cm lower (IK, not Dream-1).
+
+    The policy's joint targets are kept, with a small downward Cartesian correction added on that
+    arm only when its grasp site is already within `radius` of a fruit. Counts are reported per arm.
+    """
+    model, data = env.model, env.data
+    stats = {"left": 0, "right": 0}
+    prev = env.step
+    dof = {s: [model.jnt_dofadr[model.joint(f"{s}_joint{i}").id] for i in range(1, 7)] for s in stats}
+    limits = {s: np.vstack([model.joint(f"{s}_joint{i}").range for i in range(1, 7)]) for s in stats}
+    bodies = {s: model.body(f"{s}_gripper").id for s in stats}
+
+    def step(left, right):
+        corrected = []
+        for side, action in (("left", left), ("right", right)):
+            row = np.array(action, dtype=float, copy=True)
+            site = data.body(f"{side}_grasp_site").xpos
+            fruit = min(OBJECTS, key=lambda n: np.linalg.norm(data.body(n).xpos - site))
+            target = data.body(fruit).xpos
+            # only lower while the gripper is still above the fruit: never drive it into the table
+            if np.linalg.norm(target - site) < radius and site[2] > target[2] + 0.005:
+                jacp, jacr = np.zeros((3, model.nv)), np.zeros((3, model.nv))
+                mujoco.mj_jacBody(model, data, jacp, jacr, bodies[side])
+                jac = jacp[:, dof[side]]
+                dq = jac.T @ np.linalg.solve(jac @ jac.T + 1e-5 * np.eye(3), np.array([0.0, 0.0, -dz]))
+                row[:6] = np.clip(row[:6] + np.clip(dq, -0.05, 0.05), limits[side][:, 0], limits[side][:, 1])
+                stats[side] += 1
+            corrected.append(row)
+        return prev(*corrected)
+
+    env.step = step
+    return stats
+
+
+def hold_grip(env):
+    """SCRIPTED ASSIST: after a finger touches a fruit, keep that gripper shut for the rest of the trial."""
+    stats = {"left": 0, "right": 0}
+    latched = {"left": False, "right": False}
+    prev = env.step
+
+    def step(left, right):
+        for contact in env.data.contact[: env.data.ncon]:
+            a = finger_body(env.model, contact.geom1)
+            b = finger_body(env.model, contact.geom2)
+            for finger, other in ((a, b), (b, a)):
+                side = arm_of(finger)
+                if side and any(name in other.lower() for name in OBJECTS):
+                    latched[side] = True
+        out = []
+        for side, action in (("left", left), ("right", right)):
+            row = np.array(action, dtype=float, copy=True)
+            if latched[side]:
+                row[6] = 0.0
+                stats[side] += 1
+            out.append(row)
+        return prev(*out)
+
+    env.step = step
+    return stats, latched
+
+
 def grasp_probe(env):
     """Count finger-object contacts while a hand is closing: proof the object is between the fingers."""
     log = {"left": 0, "right": 0, "objects": set()}
-    original = getattr(env, "_probe_step", None) or env.step
-    env._probe_step = original
+    original = env.step
 
     def step(left, right):
         closing = left[6] < 0.25 or right[6] < 0.25
@@ -316,10 +376,16 @@ def main():
     ap.add_argument("--grasp-force", type=float, default=40.0, help="finger servo limit in N (stock 22)")
     ap.add_argument("--grasp-friction", type=float, default=2.5, help="finger pad friction (stock 1.6)")
     ap.add_argument("--object-friction", type=float, default=0.0, help="fruit surface friction (0 = leave stock)")
+    ap.add_argument("--assist-descent", type=float, default=0.0,
+                    help="SCRIPTED ASSIST: metres to aim below the gripper once near a fruit (0 = off)")
+    ap.add_argument("--assist-radius", type=float, default=0.08, help="distance that arms the descent assist")
+    ap.add_argument("--hold-grip", action="store_true",
+                    help="SCRIPTED ASSIST: keep a gripper shut once it touches a fruit")
     args = ap.parse_args()
     args.frames.mkdir(parents=True, exist_ok=True)
 
     env = yam_env.YamEnv()
+    env._pristine_step = env.step  # wrappers below replace env.step; each trial starts from this one
     if args.grasp_boost:
         fingers, pads = boost_grasp(env, args.grasp_force, args.grasp_friction)
         print(f"grasp boost: {fingers} finger actuators at +-{args.grasp_force:.0f} N, "
@@ -334,6 +400,7 @@ def main():
             slug = re.sub(r"[^a-z0-9]+", "_", task.lower()).strip("_")
             tag = f"{slug}_{trial + 1}" + (f"_{args.tag}" if args.tag else "")
             # fresh scene each trial, with the JD of every object recorded first
+            env.step = env._pristine_step  # drop the previous trial's probe/assist wrappers
             env.reset()
             pre = poses(env)
             before = args.frames / f"{tag}_before_top.png"
@@ -349,6 +416,8 @@ def main():
 
             grasp = grasp_probe(env)
             pad_ids, track = grip_track(env)
+            descent = assist_descent(env, args.assist_descent, args.assist_radius) if args.assist_descent > 0 else None
+            hold, latched = hold_grip(env) if args.hold_grip else (None, None)
             recorder = Recorder(args.video_dir / f"{tag}.mp4", args.frames / f"{tag}_gui.png", args.seconds)
             t0 = time.monotonic()
             recording = recorder.start() if args.viewer else False
@@ -381,6 +450,15 @@ def main():
                         approach.append(f"{side}->{name} closest {info['min'] * 100:.1f} cm at gripper z {info['gz']:.3f} m")
             if approach:
                 print("  grip approach: " + " | ".join(approach), flush=True)
+            assist = []
+            if descent is not None:
+                assist.append(f"descent {args.assist_descent * 100:.0f} mm applied {descent['left']}x left / "
+                              f"{descent['right']}x right")
+            if hold is not None:
+                assist.append(f"grip latched {latched['left']} left / {latched['right']} right "
+                              f"({hold['left']}/{hold['right']} steps held shut)")
+            if assist:
+                print("  SCRIPTED ASSIST: " + " | ".join(assist), flush=True)
             print(f"  {verdict}: {detail}", flush=True)
             print(f"  elapsed {elapsed:.0f}s · video {'saved' if got_video else 'none'} · "
                   f"proof {'saved' if made else 'none'} · gui shot {'saved' if shot else 'none'}", flush=True)
@@ -391,6 +469,7 @@ def main():
                      f"    grasp contacts while closing: left {grasp['left']}, right {grasp['right']}, "
                      f"objects {touching}\n"
                      f"    grip approach: {' | '.join(approach) if approach else 'no distance recorded'}\n"
+                     f"    SCRIPTED ASSIST: {' | '.join(assist) if assist else 'none (policy only)'}\n"
                      f"    elapsed: {elapsed:.0f}s ({'GUI' if args.viewer else 'headless'}), "
                      f"actions {args.actions}/request, seconds {args.seconds:.0f}\n"
                      f"    video: {recorder.video if got_video else 'not recorded'}\n"
