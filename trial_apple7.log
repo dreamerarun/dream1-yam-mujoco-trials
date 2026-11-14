@@ -1,0 +1,43 @@
+[budget] est. spend <= $5.505 of $5.85 (110.1 of 117.0 min of runtime)
+grasp boost: 4 finger actuators at +-80 N, 286 finger pads at friction 8.0
+object grip: 21 fruit geoms at friction 4.0
+
+===== [02:51:55] pick up the apple and put it on the plate · 240s · GUI =====
+  Running: pick up the apple and put it on the plate · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Dream · 3.75s RTT · 1 requests · 0 actions
+  Dream · 0.76s RTT · 2 requests · 48 actions
+  Dream · 0.88s RTT · 3 requests · 96 actions
+  Dream · 1.89s RTT · 4 requests · 144 actions
+  Dream · 1.07s RTT · 5 requests · 192 actions
+  Dream · 0.66s RTT · 6 requests · 240 actions
+  Dream · 0.96s RTT · 7 requests · 288 actions
+  Dream · 0.97s RTT · 8 requests · 336 actions
+  Dream · 1.20s RTT · 9 requests · 384 actions
+  Dream · 1.11s RTT · 10 requests · 432 actions
+  Dream · 0.79s RTT · 11 requests · 480 actions
+  Dream · 0.78s RTT · 12 requests · 528 actions
+  Dream · 1.10s RTT · 13 requests · 576 actions
+  Dream · 1.11s RTT · 14 requests · 624 actions
+  Dream · 1.02s RTT · 15 requests · 672 actions
+  Dream · 1.16s RTT · 16 requests · 720 actions
+  Dream · 1.25s RTT · 17 requests · 768 actions
+  Dream · 0.99s RTT · 18 requests · 816 actions
+  Dream · 1.02s RTT · 19 requests · 864 actions
+  Dream · 1.05s RTT · 20 requests · 912 actions
+  Dream · 2.06s RTT · 21 requests · 960 actions
+  Dream · 1.09s RTT · 22 requests · 1008 actions
+  Dream · 1.15s RTT · 23 requests · 1056 actions
+  Dream · 1.01s RTT · 24 requests · 1104 actions
+  Dream · 1.00s RTT · 25 requests · 1152 actions
+  Dream · 1.02s RTT · 26 requests · 1200 actions
+  Dream · 2.71s RTT · 27 requests · 1248 actions
+  Dream · 0.84s RTT · 28 requests · 1296 actions
+  Dream · 0.89s RTT · 29 requests · 1344 actions
+  Dream · 0.94s RTT · 30 requests · 1392 actions
+  Dream · 1.12s RTT · 31 requests · 1440 actions
+  Dream · 0.89s RTT · 32 requests · 1488 actions
+  Dream · 0.99s RTT · 33 requests · 1536 actions
+  Dream · 0.90s RTT · 34 requests · 1584 actions
+  Dream · 1.07s RTT · 35 requests · 1632 actions
