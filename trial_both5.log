@@ -1,0 +1,33 @@
+[budget] est. spend <= $6.434 of $6.70 (128.7 of 134.0 min of runtime)
+grasp boost: 4 finger actuators at +-80 N, 286 finger pads at friction 8.0
+object grip: 21 fruit geoms at friction 4.0
+
+===== [03:44:50] pick up the banana and put it on the plate, then pick up the apple and put it in the bowl · 240s · GUI =====
+  Running: pick up the banana and put it on the plate, then pick up the apple and put it in the bowl · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Dream · 1.99s RTT · 1 requests · 0 actions
+  Dream · 0.84s RTT · 2 requests · 48 actions
+  Dream · 1.13s RTT · 3 requests · 96 actions
+  Dream · 0.92s RTT · 4 requests · 144 actions
+  Dream · 1.06s RTT · 5 requests · 192 actions
+  Dream · 1.08s RTT · 6 requests · 240 actions
+  Dream · 0.88s RTT · 7 requests · 288 actions
+  Dream · 0.89s RTT · 8 requests · 336 actions
+  Dream · 0.98s RTT · 9 requests · 384 actions
+  Dream · 0.94s RTT · 10 requests · 432 actions
+  Dream · 0.93s RTT · 11 requests · 480 actions
+  Dream · 1.02s RTT · 12 requests · 528 actions
+  Dream · 1.14s RTT · 13 requests · 576 actions
+  Dream · 1.87s RTT · 14 requests · 624 actions
+  Dream · 1.28s RTT · 15 requests · 672 actions
+  Dream · 1.53s RTT · 16 requests · 720 actions
+  Dream · 1.37s RTT · 17 requests · 768 actions
+  Dream · 1.44s RTT · 18 requests · 816 actions
+  Dream · 1.36s RTT · 19 requests · 864 actions
+  Dream · 1.69s RTT · 20 requests · 912 actions
+  Dream · 2.12s RTT · 21 requests · 960 actions
+  Dream · 1.00s RTT · 22 requests · 1008 actions
+  Dream · 1.14s RTT · 23 requests · 1056 actions
+  Dream · 1.06s RTT · 24 requests · 1104 actions
+  Dream · 1.12s RTT · 25 requests · 1152 actions
