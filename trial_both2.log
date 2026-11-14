@@ -1,0 +1,75 @@
+[budget] est. spend <= $5.697 of $5.85 (113.9 of 117.0 min of runtime)
+grasp boost: 4 finger actuators at +-80 N, 286 finger pads at friction 8.0
+object grip: 21 fruit geoms at friction 4.0
+
+===== [03:00:00] pick up the banana and put it in the bowl, then pick up the apple and put it on the plate · 205s · GUI =====
+  Running: pick up the banana and put it in the bowl, then pick up the apple and put it on the plate · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Dream · 3.66s RTT · 1 requests · 0 actions
+  Dream · 1.76s RTT · 2 requests · 48 actions
+  Dream · 1.11s RTT · 3 requests · 96 actions
+  Dream · 0.93s RTT · 4 requests · 144 actions
+  Dream · 0.99s RTT · 5 requests · 192 actions
+  Dream · 0.87s RTT · 6 requests · 240 actions
+  Dream · 1.04s RTT · 7 requests · 288 actions
+  Dream · 1.23s RTT · 8 requests · 336 actions
+  Dream · 1.02s RTT · 9 requests · 384 actions
+  Dream · 1.27s RTT · 10 requests · 432 actions
+  Dream · 2.39s RTT · 11 requests · 480 actions
+  Dream · 0.79s RTT · 12 requests · 528 actions
+  Dream · 0.67s RTT · 13 requests · 576 actions
+  Dream · 0.99s RTT · 14 requests · 624 actions
+  Dream · 0.64s RTT · 15 requests · 672 actions
+  Dream · 1.00s RTT · 16 requests · 720 actions
+  Dream · 1.08s RTT · 17 requests · 768 actions
+  Dream · 0.69s RTT · 18 requests · 816 actions
+  Dream · 0.63s RTT · 19 requests · 864 actions
+  Dream · 3.31s RTT · 20 requests · 912 actions
+  Dream · 0.88s RTT · 21 requests · 960 actions
+  Dream · 0.75s RTT · 22 requests · 1008 actions
+  Dream · 1.10s RTT · 23 requests · 1056 actions
+  Dream · 1.11s RTT · 24 requests · 1104 actions
+  Dream · 0.71s RTT · 25 requests · 1152 actions
+  Dream · 1.48s RTT · 26 requests · 1200 actions
+  Dream · 0.85s RTT · 27 requests · 1248 actions
+  Dream · 0.64s RTT · 28 requests · 1296 actions
+  Dream · 2.46s RTT · 29 requests · 1344 actions
+  Dream · 1.36s RTT · 30 requests · 1392 actions
+  Dream · 1.01s RTT · 31 requests · 1440 actions
+  Dream · 1.13s RTT · 32 requests · 1488 actions
+  Dream · 1.07s RTT · 33 requests · 1536 actions
+  Dream · 1.04s RTT · 34 requests · 1584 actions
+  Dream · 1.19s RTT · 35 requests · 1632 actions
+  Dream · 1.12s RTT · 36 requests · 1680 actions
+  Dream · 1.00s RTT · 37 requests · 1728 actions
+  Dream · 1.10s RTT · 38 requests · 1776 actions
+  Dream · 1.57s RTT · 39 requests · 1824 actions
+  Dream · 0.80s RTT · 40 requests · 1872 actions
+  Dream · 1.94s RTT · 41 requests · 1920 actions
+  Dream · 0.65s RTT · 42 requests · 1968 actions
+  Dream · 0.90s RTT · 43 requests · 2016 actions
+  Dream · 0.75s RTT · 44 requests · 2064 actions
+  Dream · 1.23s RTT · 45 requests · 2112 actions
+  Dream · 0.90s RTT · 46 requests · 2160 actions
+  Dream · 0.94s RTT · 47 requests · 2208 actions
+  Dream · 0.88s RTT · 48 requests · 2256 actions
+
+[budget] BUDGET CAP $5.85 reached: stopping the sim.
+  Finished · 2304 actions · 48 requests · average RTT 1.18s · limits adjusted (details: --verbose)
+Traceback (most recent call last):
+  File "/home/arun/dream1_isaac/yam_trials.py", line 524, in <module>
+    main()
+  File "/home/arun/dream1_isaac/yam_trials.py", line 456, in main
+    dream_control.main(argv, shared_env=env)
+  File "/home/arun/dream-env/lib/python3.12/site-packages/dream_examples/yam_mujoco/dream_control.py", line 427, in main
+    sync(viewer)
+  File "/home/arun/dream-env/lib/python3.12/site-packages/dream_examples/yam_mujoco/dream_control.py", line 309, in __call__
+    viewer.sync()
+  File "/home/arun/dream-env/lib/python3.12/site-packages/mujoco/viewer.py", line 242, in sync
+    sim.sync(state_only)  # locks internally
+    ^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+/home/arun/dream-env/lib/python3.12/site-packages/glfw/__init__.py:917: GLFWError: (65537) b'The GLFW library is not initialized'
+
+[budget] est. spend <= $5.852 of $5.85 (117.0 of 117.0 min of runtime)
