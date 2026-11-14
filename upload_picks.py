@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.error
@@ -46,11 +47,10 @@ def upload(local, remote, message=None):
 
 
 def main():
+    patterns = sys.argv[1:] or ["yam_check/video/*pick*.mp4", "yam_check/trials/*pick*"]
     jobs = []
-    for local in sorted(glob.glob("yam_check/video/*pick*.mp4")):
-        jobs.append(local)
-    for local in sorted(glob.glob("yam_check/trials/*pick*")):
-        jobs.append(local)
+    for pattern in patterns:
+        jobs.extend(sorted(glob.glob(pattern)))
 
     for local in jobs:
         remote = local.replace(os.sep, "/")
