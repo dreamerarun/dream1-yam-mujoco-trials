@@ -1,0 +1,39 @@
+[budget] est. spend <= $6.510 of $6.80 (130.2 of 136.0 min of runtime)
+grasp boost: 4 finger actuators at +-40 N, 286 finger pads at friction 2.5
+
+===== [03:51:26] pick up the banana and put it on the plate · 60s · GUI =====
+  Running: pick up the banana and put it on the plate · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Dream · 4.50s RTT · 1 requests · 0 actions
+  Dream · 0.92s RTT · 2 requests · 48 actions
+  Dream · 1.07s RTT · 3 requests · 96 actions
+  Dream · 0.74s RTT · 4 requests · 144 actions
+  Dream · 1.42s RTT · 5 requests · 192 actions
+  Dream · 1.60s RTT · 6 requests · 240 actions
+  Dream · 1.17s RTT · 7 requests · 288 actions
+  Dream · 1.22s RTT · 8 requests · 336 actions
+  Dream · 1.14s RTT · 9 requests · 384 actions
+  Dream · 1.12s RTT · 10 requests · 432 actions
+  Dream · 1.03s RTT · 11 requests · 480 actions
+  Dream · 1.05s RTT · 12 requests · 528 actions
+  Dream · 0.97s RTT · 13 requests · 576 actions
+  Dream · 0.99s RTT · 14 requests · 624 actions
+  Dream · 0.95s RTT · 15 requests · 672 actions
+  Dream · 0.92s RTT · 16 requests · 720 actions
+  Finished · 743 actions · 16 requests · average RTT 1.30s · limits adjusted (details: --verbose)
+  grasp: left finger-object contacts 0, right 0 · touched nothing
+  FAIL: banana -> plate: xy 16.5 cm (limit 7), dz +4.0 cm, moved 6.0 cm
+  elapsed 61s · video saved · proof saved · gui shot saved
+
+===== SUMMARY =====
+[03:51:26] pick up the banana and put it on the plate
+    verdict: FAIL
+    banana -> plate: xy 16.5 cm (limit 7), dz +4.0 cm, moved 6.0 cm
+    grasp contacts while closing: left 0, right 0, objects nothing
+    elapsed: 61s (GUI), actions 48/request, seconds 60
+    video: yam_check/video/pick_up_the_banana_and_put_it_on_the_plate_1.mp4
+    proof: yam_check/trials/pick_up_the_banana_and_put_it_on_the_plate_1_proof.png
+
+
+[budget] est. spend <= $6.563 of $6.80 (131.3 of 136.0 min of runtime)
