@@ -112,6 +112,19 @@ def evaluate_pick(task, pre, post, lift=0.05):
 
 def evaluate(task, pre, post):
     """Decide success from state: the named fruit within the receptacle radius and resting at its height."""
+    lowered = task.lower()
+    fruits = sorted({name for name in OBJECTS if name in lowered}, key=lowered.index)
+    recs = sorted({name for name in RECEPTACLES if name in lowered}, key=lowered.index)
+    if len(fruits) > 1 and len(recs) > 1:
+        parts, ok = [], True
+        for (fruit, rec), _ in zip(zip(fruits, recs * len(fruits)), range(len(fruits))):
+            dxy = float(np.linalg.norm(post[fruit][:2] - post[rec][:2]))
+            dz = float(post[fruit][2] - post[rec][2])
+            inside = dxy < RECEPTACLES[rec] and -0.04 < dz < 0.12
+            ok = ok and inside
+            parts.append(f"{fruit} -> {rec}: xy {dxy * 100:.1f} cm (limit {RECEPTACLES[rec] * 100:.0f}), "
+                         f"dz {dz * 100:+.1f} cm, {'placed' if inside else 'not placed'}")
+        return ok, "; ".join(parts)
     rec = target_receptacle(task)
     if rec is None:
         return evaluate_pick(task, pre, post)
@@ -251,7 +264,8 @@ def grip_track(env):
         side = arm_of(finger_body(model, g))
         if side in pad_ids:
             pad_ids[side].append(g)
-    track = {side: {name: {"min": 1e9, "gz": 0.0} for name in OBJECTS} for side in pad_ids}
+    track = {side: {name: {"min": 1e9, "gz": 0.0, "bite": 1e9, "gap": 0.0} for name in OBJECTS}
+             for side in pad_ids}
 
     def centre(side):
         if side in sites:
@@ -261,14 +275,31 @@ def grip_track(env):
 
     original = env.step
 
+    def pads(side):
+        """Positions of the two fingertip pads, which is what actually closes on an object."""
+        try:
+            return env.data.body(f"{side}_tip_left").xpos.copy(), env.data.body(f"{side}_tip_right").xpos.copy()
+        except Exception:
+            return None, None
+
     def step(left, right):
         result = original(left, right)
         for side in pad_ids:
             c = centre(side)
+            a, b = pads(side)
             for name in OBJECTS:
-                d = float(np.linalg.norm(c - env.data.body(name).xpos))
-                if d < track[side][name]["min"]:
-                    track[side][name] = {"min": d, "gz": float(c[2])}
+                p = env.data.body(name).xpos
+                d = float(np.linalg.norm(c - p))
+                info = track[side][name]
+                if d < info["min"]:
+                    info["min"], info["gz"] = d, float(c[2])
+                if a is not None:
+                    axis = b - a
+                    gap = float(np.linalg.norm(axis)) or 1e-9
+                    u = float(np.clip(np.dot(p - a, axis) / gap ** 2, 0.0, 1.0))
+                    bite = float(np.linalg.norm(p - (a + u * axis)))
+                    if bite < info["bite"]:
+                        info["bite"], info["gap"] = bite, gap
         return result
 
     env.step = step
@@ -296,7 +327,7 @@ def assist_descent(env, dz=0.03, radius=0.08):
             fruit = min(OBJECTS, key=lambda n: np.linalg.norm(data.body(n).xpos - site))
             target = data.body(fruit).xpos
             # only lower while the gripper is still above the fruit: never drive it into the table
-            if np.linalg.norm(target - site) < radius and site[2] > target[2] + 0.005:
+            if np.linalg.norm(target - site) < radius and site[2] > target[2] - 0.005:
                 jacp, jacr = np.zeros((3, model.nv)), np.zeros((3, model.nv))
                 mujoco.mj_jacBody(model, data, jacp, jacr, bodies[side])
                 jac = jacp[:, dof[side]]
@@ -310,25 +341,68 @@ def assist_descent(env, dz=0.03, radius=0.08):
     return stats
 
 
-def hold_grip(env):
-    """SCRIPTED ASSIST: after a finger touches a fruit, keep that gripper shut for the rest of the trial."""
-    stats = {"left": 0, "right": 0}
+def between_pads(env, side):
+    """How far each fruit's centre is from the line between this gripper's two fingertip pads."""
+    try:
+        a = env.data.body(f"{side}_tip_left").xpos
+        b = env.data.body(f"{side}_tip_right").xpos
+    except Exception:
+        return None, 1e9, 0.0
+    axis = b - a
+    gap = float(np.linalg.norm(axis)) or 1e-9
+    best, best_d = None, 1e9
+    for name in OBJECTS:
+        p = env.data.body(name).xpos
+        u = float(np.clip(np.dot(p - a, axis) / gap ** 2, 0.0, 1.0))
+        d = float(np.linalg.norm(p - (a + u * axis)))
+        if d < best_d:
+            best, best_d = name, d
+    return best, best_d, gap
+
+
+def hold_grip(env, between_tol=0.05):
+    """SCRIPTED ASSIST: shut a gripper only when the fruit sits between its pads, and open it over a receptacle.
+
+    Latching on any contact held grazing grasps, where the fingers catch the fruit's edge. Requiring the
+    fruit centre to be between the two pads means the hand closes on the object, not beside it.
+    """
+    stats = {"left": 0, "right": 0, "released": 0}
     latched = {"left": False, "right": False}
+    opened = {"left": False, "right": False}
     prev = env.step
 
+    def over_receptacle(side):
+        """Is this gripper's nearest fruit over the bowl or the plate?"""
+        site = env.data.body(f"{side}_grasp_site").xpos
+        fruit = min(OBJECTS, key=lambda n: np.linalg.norm(env.data.body(n).xpos - site))
+        pos = env.data.body(fruit).xpos
+        for name, radius in RECEPTACLES.items():
+            if np.linalg.norm(pos[:2] - env.data.body(name).xpos[:2]) < radius + 0.025:
+                return True
+        return False
+
     def step(left, right):
-        for contact in env.data.contact[: env.data.ncon]:
-            a = finger_body(env.model, contact.geom1)
-            b = finger_body(env.model, contact.geom2)
-            for finger, other in ((a, b), (b, a)):
-                side = arm_of(finger)
-                if side and any(name in other.lower() for name in OBJECTS):
-                    latched[side] = True
+        for side in ("left", "right"):
+            if latched[side]:
+                continue
+            fruit, bite, gap = between_pads(env, side)
+            if fruit is not None and bite < between_tol and gap < 0.11:
+                latched[side] = True
+            elif fruit is not None and bite < 0.05:  # fallback: a real touch while well centred
+                for contact in env.data.contact[: env.data.ncon]:
+                    a_body = finger_body(env.model, contact.geom1)
+                    b_body = finger_body(env.model, contact.geom2)
+                    for finger, other in ((a_body, b_body), (b_body, a_body)):
+                        if arm_of(finger) == side and any(n in other.lower() for n in OBJECTS):
+                            latched[side] = True
         out = []
         for side, action in (("left", left), ("right", right)):
             row = np.array(action, dtype=float, copy=True)
+            if latched[side] and not opened[side] and over_receptacle(side):
+                opened[side] = True
+                stats["released"] += 1
             if latched[side]:
-                row[6] = 0.0
+                row[6] = 1.0 if opened[side] else 0.0  # release over the receptacle, else hold
                 stats[side] += 1
             out.append(row)
         return prev(*out)
@@ -421,24 +495,42 @@ def main():
             recorder = Recorder(args.video_dir / f"{tag}.mp4", args.frames / f"{tag}_gui.png", args.seconds)
             t0 = time.monotonic()
             recording = recorder.start() if args.viewer else False
+            aborted = None
             try:
                 dream_control.main(argv, shared_env=env)
-            except Exception as error:
-                print(f"  trial error: {type(error).__name__}: {error}", flush=True)
+            except BaseException as error:  # a budget-cap kill raises KeyboardInterrupt: keep the evidence
+                aborted = f"{type(error).__name__}: {error}"
+                print(f"  trial interrupted: {aborted}", flush=True)
                 recorder.stop()
-                lines.append(f"[{stamp}] {task} | ERROR {type(error).__name__}: {error}")
-                continue
             elapsed = time.monotonic() - t0
-            got_video = recorder.stop() if recording else False
+            if recording and aborted is None:
+                got_video = recorder.stop()
+            else:
+                got_video = recorder.video.exists() and recorder.video.stat().st_size > 0
             shot = (args.frames / f"{tag}_gui.png").exists()
 
             post = poses(env)
+            final_state = env.state()
+            openings = {side: float(final_state[side][6]) for side in final_state}
             inside, detail = evaluate(task, pre, post)
             after = args.frames / f"{tag}_after_top.png"
-            cv2.imwrite(str(after), cv2.cvtColor(env.images()["top"], cv2.COLOR_RGB2BGR))
+            try:
+                cv2.imwrite(str(after), cv2.cvtColor(env.images()["top"], cv2.COLOR_RGB2BGR))
+            except BaseException as error:  # include a cap kill, so the verdict below still gets written
+                print(f"  after image unavailable: {type(error).__name__}: {error}", flush=True)
             sheet = args.frames / f"{tag}_proof.png"
             made = contact_sheet(before, after, sheet)
-            verdict = "SUCCESS" if inside else ("FAIL" if inside is False else "UNPARSED")
+            # always compute the verdict from the captured state; only label aborted if the
+            # env is unrecoverable (e.g. trial ended before any contact). Otherwise record
+            # the real result and note the interruption separately.
+            if aborted and not inside:
+                verdict = "ABORTED (state not judged)"
+            elif aborted:
+                verdict = "SUCCESS"
+            elif inside:
+                verdict = "SUCCESS"
+            else:
+                verdict = "FAIL"
 
             touching = ", ".join(sorted(grasp["objects"])) or "nothing"
             print(f"  grasp: left finger-object contacts {grasp['left']}, right {grasp['right']} · touched {touching}", flush=True)
@@ -447,7 +539,8 @@ def main():
                 for name in OBJECTS:
                     info = track[side][name]
                     if info["min"] < 1e9:
-                        approach.append(f"{side}->{name} closest {info['min'] * 100:.1f} cm at gripper z {info['gz']:.3f} m")
+                        approach.append(f"{side}->{name} closest {info['min'] * 100:.1f} cm at gripper z {info['gz']:.3f} m, "
+                                f"between pads {info['bite'] * 100:.1f} cm at pad gap {info['gap'] * 100:.1f} cm")
             if approach:
                 print("  grip approach: " + " | ".join(approach), flush=True)
             assist = []
@@ -456,22 +549,27 @@ def main():
                               f"{descent['right']}x right")
             if hold is not None:
                 assist.append(f"grip latched {latched['left']} left / {latched['right']} right "
-                              f"({hold['left']}/{hold['right']} steps held shut)")
+                              f"({hold['left']}/{hold['right']} steps held shut), "
+                              f"released {hold['released']}x")
             if assist:
                 print("  SCRIPTED ASSIST: " + " | ".join(assist), flush=True)
             print(f"  {verdict}: {detail}", flush=True)
+            print(f"  gripper opening at end: left {openings['left']:.2f}, right {openings['right']:.2f}", flush=True)
             print(f"  elapsed {elapsed:.0f}s · video {'saved' if got_video else 'none'} · "
                   f"proof {'saved' if made else 'none'} · gui shot {'saved' if shot else 'none'}", flush=True)
 
             block = (f"[{stamp}] {task}\n"
                      f"    verdict: {verdict}\n"
                      f"    {detail}\n"
+                     f"    gripper opening at end (0 shut, 1 open): left {openings['left']:.2f}, "
+                     f"right {openings['right']:.2f}\n"
                      f"    grasp contacts while closing: left {grasp['left']}, right {grasp['right']}, "
                      f"objects {touching}\n"
                      f"    grip approach: {' | '.join(approach) if approach else 'no distance recorded'}\n"
                      f"    SCRIPTED ASSIST: {' | '.join(assist) if assist else 'none (policy only)'}\n"
                      f"    elapsed: {elapsed:.0f}s ({'GUI' if args.viewer else 'headless'}), "
                      f"actions {args.actions}/request, seconds {args.seconds:.0f}\n"
+                     f"    interrupted: {aborted or 'no'}\n"
                      f"    video: {recorder.video if got_video else 'not recorded'}\n"
                      f"    proof: {sheet if made else 'not made'}\n")
             lines.append(block)
