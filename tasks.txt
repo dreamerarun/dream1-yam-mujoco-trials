@@ -1,0 +1,14 @@
+# Type these one at a time into the YAM sim prompt. First: /seconds 40   (stops each trial after 40 s)
+# Scene objects: apple, orange, banana, bowl, plate. Each 40 s trial is roughly 15-25 API calls, about $0.02-0.04.
+
+# --- Dream's own tasks (known-good phrasing: run one first to confirm everything works) ---
+put apple into the bowl
+put banana on the plate
+put orange into the bowl
+
+# --- Your own tasks (same objects, new combinations; may fail, that's useful data) ---
+put apple on the plate
+put banana into the bowl
+put orange on the plate
+put the apple into the bowl and the banana on the plate
+put the orange on the plate and the apple into the bowl
