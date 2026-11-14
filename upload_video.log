@@ -1,0 +1,17 @@
+OK   yam_check/video/put_apple_into_the_bowl_1_a1-300.mp4 (27.3 MB)
+OK   yam_check/video/put_apple_into_the_bowl_1_a1.mp4 (27.5 MB)
+OK   yam_check/video/put_apple_into_the_bowl_1_guitest4.mp4 (6.2 MB)
+OK   yam_check/video/put_apple_into_the_bowl_1_r1.mp4 (34.8 MB)
+OK   yam_check/video/put_apple_on_the_plate_1_a4.mp4 (29.4 MB)
+OK   yam_check/video/put_banana_into_the_bowl_1_a5.mp4 (34.8 MB)
+OK   yam_check/video/put_banana_on_the_plate_1_a2.mp4 (30.0 MB)
+OK   yam_check/video/put_orange_into_the_bowl_1_a3.mp4 (25.5 MB)
+OK   yam_check/video/put_orange_into_the_bowl_1_quicktest.mp4 (16.4 MB)
+OK   yam_check/video/put_orange_on_the_plate_1_a6.mp4 (31.4 MB)
+OK   yam_check/video/put_the_apple_into_the_bowl_and_the_banana_on_the_plate_1_a7.mp4 (29.5 MB)
+ERR  yam_check/video/put_the_orange_on_the_plate_and_the_apple_into_the_bowl_1_a8.mp4 attempt 1: HTTP 401 {"message":"Bad credentials","documentation_url":"https://docs.github.com/rest","status":"401"}
+ERR  yam_check/video/put_the_orange_on_the_plate_and_the_apple_into_the_bowl_1_a8.mp4 attempt 2: HTTP 401 {"message":"Bad credentials","documentation_url":"https://docs.github.com/rest","status":"401"}
+ERR  yam_check/video/put_the_orange_on_the_plate_and_the_apple_into_the_bowl_1_a8.mp4 attempt 3: HTTP 401 {"message":"Bad credentials","documentation_url":"https://docs.github.com/rest","status":"401"}
+ERR  yam_check/video/put_the_orange_on_the_plate_and_the_apple_into_the_bowl_1_a8.mp4 attempt 4: HTTP 401 {"message":"Bad credentials","documentation_url":"https://docs.github.com/rest","status":"401"}
+FAIL yam_check/video/put_the_orange_on_the_plate_and_the_apple_into_the_bowl_1_a8.mp4
+DONE: 11 uploaded, 1 failed
