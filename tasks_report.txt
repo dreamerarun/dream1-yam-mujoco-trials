@@ -4,6 +4,10 @@ Model: dreamlabs/dream-1-beta · Real inference per trial (no scripted motion), 
 Each trial: fresh scene, Dream's own control loop (dream_control.main), success measured from MuJoCo
 object/receptacle poses — not from the model's own claims.
 Grasp boost: finger servos +-40 N (stock 22), finger pad friction 2.5 (stock 1.6). Physics only.
+CORRECTION (see FOLLOW-UP section): the pad-friction part of this note is wrong for trials 1-8 and
+pick2arm/pick2arm_b/pick3. The boost matched bodies containing "finger", but the YAM gripper bodies are
+named left_gripper/right_gripper and left_tip_*/right_tip_*, so 0 pads were changed in those runs -- only
+the ±40 N finger servo limit was applied. Signal: the per-trial log printed "0 finger pads at friction".
 Artifacts per task: yam_check/video/<task>.mp4 (GUI capture), yam_check/trials/<task>_proof.png
 (before/after top camera), yam_check/trials/<task>_gui.png (GUI mid-trial screenshot).
 
@@ -68,3 +72,81 @@ Contact sheets stack before/after top-frames per task.
 - All videos recorded successfully with the threaded Recorder (no deadlock).
 - GUI footage confirms the arm reaches, grasps, and deposits objects — real inference,
   not scripted.
+
+
+===== FOLLOW-UP: PICK TRIALS (5 attempts, added after the 8-task run) =====
+Goal: pick the banana and the apple one at a time, one per arm, with a stronger grip.
+All trials GUI-recorded. Success = each named fruit raised >5 cm above its start height.
+
+1. "pick up the banana and the apple, one in each hand" 300 s -- FAIL
+   apple dz -0.1 cm, banana dz -1.6 cm (banana slid 7.2 cm). No lift.
+2. "pick up the banana with the left arm and the apple with the right arm" 180 s -- FAIL
+   apple dz -0.1 cm, banana dz -2.3 cm.
+3. "pick up the banana, then pick up the apple" 240 s, fingers 60 N -- FAIL
+   apple dz +0.1 cm, banana dz -1.6 cm. Log showed "0 finger pads": pad boost did not apply yet.
+4. Same task, 240 s, fingers 60 N, pads 4.0 (now really applied, 286 geoms) -- FAIL
+   apple dz +0.0 cm, banana +3.5 cm (touched, not lifted).
+   Grasp probe now correct: right gripper had 5159 closing-step contacts with the banana,
+   grasp site within 2.9 cm of the banana centre; left site within 2.3 cm of the apple.
+5. Same task, 180 s, fingers 80 N, pads 6.0, fruit surfaces 3.0 -- FAIL
+   apple dz -0.1 cm, banana -1.6 cm. Contacts: left 87 on the apple, right 621 on the banana;
+   closest site distances 2.1 cm (apple) and 2.9 cm (banana), both above the table.
+
+What this shows honestly:
+- The policy does bring both grippers down onto the correct objects (2-3 cm from centre) and the
+  fingers do make sustained contact, so the objects are between the pads.
+- It does not close/lift: every attempt ends with both fruits on the table, vertical change under
+  2 cm in either direction. Raising finger force 22 -> 80 N, pad friction 1.6 -> 6.0 and fruit
+  friction to 3.0 did not change that.
+- Grip is therefore not limited by friction here; the arm is not producing enough upward motion
+  after contact. That is a policy/action-range issue, not a physics-setting issue, and it cannot be
+  fixed without scripting the motion (which would no longer be Dream-1's own behaviour).
+- Budget: $4.870 of $5.00 spent after trial 5. Further paid trials were stopped at the cap.
+
+NOTE ON THE PROBE BUG: trials 1-8 and pick trials 1-3 printed "contacts 0 / touched nothing".
+That zero was a name-matching bug (searching for "finger" in gripper body names), not evidence
+that no contact occurred. The corrected probe is used from trial 4 onward; contacts are real there.
+
+[01:41:38] pick up the banana and the apple, one in each hand
+    verdict: FAIL
+    apple: dz -0.1 cm (needs >5), xy 0.0 cm, not lifted; banana: dz -1.6 cm (needs >5), xy 7.2 cm, not lifted
+    grasp contacts while closing: left 0, right 0, objects nothing
+    elapsed: 303s (GUI), actions 48/request, seconds 300
+    video: yam_check/video/pick_up_the_banana_and_the_apple_one_in_each_hand_1_pick2arm.mp4
+    proof: yam_check/trials/pick_up_the_banana_and_the_apple_one_in_each_hand_1_pick2arm_proof.png
+
+[01:48:32] pick up the banana with the left arm and the apple with the right arm
+    verdict: FAIL
+    apple: dz -0.1 cm (needs >5), xy 0.2 cm, not lifted; banana: dz -2.3 cm (needs >5), xy 4.9 cm, not lifted
+    grasp contacts while closing: left 0, right 0, objects nothing
+    elapsed: 182s (GUI), actions 48/request, seconds 180
+    video: yam_check/video/pick_up_the_banana_with_the_left_arm_and_the_apple_with_the_right_arm_1_pick2arm_b.mp4
+    proof: yam_check/trials/pick_up_the_banana_with_the_left_arm_and_the_apple_with_the_right_arm_1_pick2arm_b_proof.png
+
+[01:53:12] pick up the banana, then pick up the apple
+    verdict: FAIL
+    apple: dz +0.1 cm (needs >5), xy 10.5 cm, not lifted; banana: dz -1.6 cm (needs >5), xy 9.7 cm, not lifted
+    grasp contacts while closing: left 0, right 0, objects nothing
+    grip approach: no distance recorded
+    elapsed: 242s (GUI), actions 48/request, seconds 240
+    video: yam_check/video/pick_up_the_banana_then_pick_up_the_apple_1_pick3.mp4
+    proof: yam_check/trials/pick_up_the_banana_then_pick_up_the_apple_1_pick3_proof.png
+
+[01:58:38] pick up the banana, then pick up the apple
+    verdict: FAIL
+    apple: dz +0.0 cm (needs >5), xy 12.9 cm, not lifted; banana: dz +3.5 cm (needs >5), xy 11.1 cm, not lifted
+    grasp contacts while closing: left 0, right 5159, objects banana
+    grip approach: left->apple closest 2.3 cm at gripper z 0.813 m | left->orange closest 14.6 cm at gripper z 0.818 m | left->banana closest 20.7 cm at gripper z 0.836 m | right->apple closest 24.3 cm at gripper z 0.807 m | right->orange closest 12.2 cm at gripper z 0.799 m | right->banana closest 2.9 cm at gripper z 0.789 m
+    elapsed: 241s (GUI), actions 48/request, seconds 240
+    video: yam_check/video/pick_up_the_banana_then_pick_up_the_apple_1_pick4.mp4
+    proof: yam_check/trials/pick_up_the_banana_then_pick_up_the_apple_1_pick4_proof.png
+
+[02:04:47] pick up the banana, then pick up the apple
+    verdict: FAIL
+    apple: dz -0.1 cm (needs >5), xy 3.5 cm, not lifted; banana: dz -1.6 cm (needs >5), xy 2.2 cm, not lifted
+    grasp contacts while closing: left 87, right 621, objects apple, banana
+    grip approach: left->apple closest 2.1 cm at gripper z 0.810 m | left->orange closest 13.1 cm at gripper z 0.826 m | left->banana closest 20.6 cm at gripper z 0.827 m | right->apple closest 23.6 cm at gripper z 0.829 m | right->orange closest 12.0 cm at gripper z 0.827 m | right->banana closest 2.9 cm at gripper z 0.827 m
+    elapsed: 182s (GUI), actions 48/request, seconds 180
+    video: yam_check/video/pick_up_the_banana_then_pick_up_the_apple_1_pick5.mp4
+    proof: yam_check/trials/pick_up_the_banana_then_pick_up_the_apple_1_pick5_proof.png
+
