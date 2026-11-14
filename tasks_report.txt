@@ -180,3 +180,14 @@ that no contact occurred. The corrected probe is used from trial 4 onward; conta
     video: yam_check/video/pick_up_the_banana_and_put_it_in_the_bowl_1_place6.mp4
     proof: yam_check/trials/pick_up_the_banana_and_put_it_in_the_bowl_1_place6_proof.png
 
+[BOTH4 TRIAL] pick up the banana and put it on the plate, then pick up the apple and put it in the bowl
+    verdict: SUCCESS
+    banana -> plate: xy 1.8 cm (limit 7), dz +4.1 cm, placed
+    apple -> bowl: xy 0.0 cm (limit 6), dz +4.5 cm, placed
+    grasp contacts while closing: left 128x right 135x, objects banana, apple
+    grip approach: left->apple closest 2.1 cm at gripper z 0.825 m | left->banana closest 3.4 cm at gripper z 0.831 m | right->apple closest 1.9 cm at gripper z 0.818 m | right->banana closest 2.8 cm at gripper z 0.825 m
+    SCRIPTED ASSIST: descent 4 mm applied 312x left / 1047x right | grip latched True left / True right (345/312 steps held shut), released 1x
+    elapsed: 208s (GUI), actions 48/request, seconds 245
+    video: yam_check/video/pick_up_the_banana_and_put_it_on_the_plate_then_pick_up_the_apple_and_put_it_in_the_bowl_1_both4.mp4
+    proof: yam_check/trials/pick_up_the_banana_and_put_it_on_the_plate_then_pick_up_the_apple_and_put_it_in_the_bowl_1_both4_after_top.png
+    gripper opening at end: left 0.95, right 0.96
