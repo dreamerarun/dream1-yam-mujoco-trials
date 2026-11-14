@@ -1,0 +1,18 @@
+[budget] est. spend <= $5.852 of $6.10 (117.0 of 122.0 min of runtime)
+grasp boost: 4 finger actuators at +-80 N, 286 finger pads at friction 8.0
+object grip: 21 fruit geoms at friction 4.0
+
+===== [03:06:27] pick up the banana and put it in the bowl, then pick up the apple and put it on the plate · 190s · GUI =====
+  Running: pick up the banana and put it in the bowl, then pick up the apple and put it on the plate · dream-1-beta
+/home/arun/.local/share/uv/python/cpython-3.12.15-linux-x86_64-gnu/lib/python3.12/concurrent/futures/thread.py:59: UserWarning: no one has checked what the model sees for these cameras and this robot: run python -m dream.check before the arms move for real. Checked another way? The person who looked (never an agent) records it: python -m dream.input_check 4932209e541e
+  result = self.fn(*self.args, **self.kwargs)
+  Dream · 3.78s RTT · 1 requests · 0 actions
+  Dream · 0.91s RTT · 2 requests · 48 actions
+  Dream · 1.30s RTT · 3 requests · 96 actions
+  Dream · 1.59s RTT · 4 requests · 144 actions
+  Dream · 1.42s RTT · 5 requests · 192 actions
+  Dream · 2.98s RTT · 6 requests · 240 actions
+  Dream · 1.41s RTT · 7 requests · 288 actions
+  Dream · 2.46s RTT · 8 requests · 336 actions
+  Dream · 1.53s RTT · 9 requests · 384 actions
+  Dream · 1.25s RTT · 10 requests · 432 actions
