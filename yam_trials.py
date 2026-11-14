@@ -54,15 +54,36 @@ def boost_grasp(env, force=40.0, friction=2.5):
     pads = 0
     for g in range(model.ngeom):
         body = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, int(model.geom_bodyid[g])) or ""
-        if "finger" in body:
+        if "gripper" in body.lower() or body.lower().startswith(("left_tip", "right_tip")):
             model.geom_friction[g][0] = friction
             pads += 1
     return fingers, pads
 
 
+def boost_object_grip(env, friction):
+    """Grippier fruit surfaces, so a closed gripper can hold them. Physics only, no motion."""
+    model = env.model
+    count = 0
+    for g in range(model.ngeom):
+        body = (mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, int(model.geom_bodyid[g])) or "").lower()
+        if body in OBJECTS:
+            model.geom_friction[g][0] = friction
+            count += 1
+    return count
+
+
 def finger_body(model, gid):
     """Which arm a contact geom belongs to, or the object name for the other side of the contact."""
     return mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, int(model.geom_bodyid[gid])) or ""
+
+
+def arm_of(body):
+    """'left'/'right' when the body is part of that gripper (gripper shell or tips), else None."""
+    name = body.lower()
+    for side in ("left", "right"):
+        if name.startswith(side) and ("gripper" in name or name.startswith(side + "_tip")):
+            return side
+    return None
 
 
 def target_receptacle(task):
@@ -72,11 +93,30 @@ def target_receptacle(task):
     return hits[0] if hits else None
 
 
+def evaluate_pick(task, pre, post, lift=0.05):
+    """Decide a pick from state: every named fruit raised clear of the table and held there."""
+    fruits = [name for name in OBJECTS if name in task.lower()]
+    if not fruits:
+        return None, "could not parse a fruit from the task text"
+    parts = []
+    ok = True
+    for fruit in fruits:
+        dz = float(post[fruit][2] - pre[fruit][2])
+        dxy = float(np.linalg.norm(post[fruit][:2] - pre[fruit][:2]))
+        lifted = dz > lift
+        ok = ok and lifted
+        parts.append(f"{fruit}: dz {dz * 100:+.1f} cm (needs >{lift * 100:.0f}), "
+                     f"xy {dxy * 100:.1f} cm, {'lifted' if lifted else 'not lifted'}")
+    return ok, "; ".join(parts)
+
+
 def evaluate(task, pre, post):
     """Decide success from state: the named fruit within the receptacle radius and resting at its height."""
     rec = target_receptacle(task)
+    if rec is None:
+        return evaluate_pick(task, pre, post)
     fruit = next((name for name in OBJECTS if name in task.lower()), None)
-    if rec is None or fruit is None:
+    if fruit is None:
         return None, "could not parse a fruit+receptacle from the task text"
     dxy = float(np.linalg.norm(post[fruit][:2] - post[rec][:2]))
     dz = float(post[fruit][2] - post[rec][2])
@@ -197,6 +237,45 @@ def contact_sheet(before, after, out):
         return False
 
 
+def grip_track(env):
+    """Track how close each gripper gets to each object: min distance and the gripper height there."""
+    model = env.model
+    sites = {}
+    for side in ("left", "right"):
+        try:
+            sites[side] = env.data.body(f"{side}_grasp_site").xpos.copy()
+        except Exception:
+            pass
+    pad_ids = {side: [] for side in sites}
+    for g in range(model.ngeom):
+        side = arm_of(finger_body(model, g))
+        if side in pad_ids:
+            pad_ids[side].append(g)
+    track = {side: {name: {"min": 1e9, "gz": 0.0} for name in OBJECTS} for side in pad_ids}
+
+    def centre(side):
+        if side in sites:
+            return env.data.body(f"{side}_grasp_site").xpos
+        geoms = pad_ids[side]
+        return np.mean([env.data.geom_xpos[g] for g in geoms], axis=0)
+
+    original = getattr(env, "_track_step", None) or env.step
+    env._track_step = original
+
+    def step(left, right):
+        result = original(left, right)
+        for side in pad_ids:
+            c = centre(side)
+            for name in OBJECTS:
+                d = float(np.linalg.norm(c - env.data.body(name).xpos))
+                if d < track[side][name]["min"]:
+                    track[side][name] = {"min": d, "gz": float(c[2])}
+        return result
+
+    env.step = step
+    return pad_ids, track
+
+
 def grasp_probe(env):
     """Count finger-object contacts while a hand is closing: proof the object is between the fingers."""
     log = {"left": 0, "right": 0, "objects": set()}
@@ -211,8 +290,9 @@ def grasp_probe(env):
                 a = finger_body(env.model, contact.geom1)
                 b = finger_body(env.model, contact.geom2)
                 for finger, other in ((a, b), (b, a)):
-                    if "finger" in finger and any(name in other.lower() for name in OBJECTS):
-                        log["left" if "left" in finger else "right"] += 1
+                    side = arm_of(finger)
+                    if side and any(name in other.lower() for name in OBJECTS):
+                        log[side] += 1
                         log["objects"].add(other)
         return result
 
@@ -233,13 +313,20 @@ def main():
     ap.add_argument("--report", type=Path, default=Path("tasks_report.txt"))
     ap.add_argument("--grasp-boost", action="store_true",
                     help="stronger finger servo force and grippier pads (sim physics, not scripted motion)")
+    ap.add_argument("--grasp-force", type=float, default=40.0, help="finger servo limit in N (stock 22)")
+    ap.add_argument("--grasp-friction", type=float, default=2.5, help="finger pad friction (stock 1.6)")
+    ap.add_argument("--object-friction", type=float, default=0.0, help="fruit surface friction (0 = leave stock)")
     args = ap.parse_args()
     args.frames.mkdir(parents=True, exist_ok=True)
 
     env = yam_env.YamEnv()
     if args.grasp_boost:
-        fingers, pads = boost_grasp(env)
-        print(f"grasp boost: {fingers} finger actuators at +-40 N, {pads} finger pads at friction 2.5", flush=True)
+        fingers, pads = boost_grasp(env, args.grasp_force, args.grasp_friction)
+        print(f"grasp boost: {fingers} finger actuators at +-{args.grasp_force:.0f} N, "
+              f"{pads} finger pads at friction {args.grasp_friction:.1f}", flush=True)
+        if args.object_friction > 0:
+            fruits = boost_object_grip(env, args.object_friction)
+            print(f"object grip: {fruits} fruit geoms at friction {args.object_friction:.1f}", flush=True)
     lines = []
     for task in args.task:
         for trial in range(args.trials):
@@ -261,6 +348,7 @@ def main():
                 argv.append("--headless")
 
             grasp = grasp_probe(env)
+            pad_ids, track = grip_track(env)
             recorder = Recorder(args.video_dir / f"{tag}.mp4", args.frames / f"{tag}_gui.png", args.seconds)
             t0 = time.monotonic()
             recording = recorder.start() if args.viewer else False
@@ -285,6 +373,14 @@ def main():
 
             touching = ", ".join(sorted(grasp["objects"])) or "nothing"
             print(f"  grasp: left finger-object contacts {grasp['left']}, right {grasp['right']} · touched {touching}", flush=True)
+            approach = []
+            for side in sorted(track):
+                for name in OBJECTS:
+                    info = track[side][name]
+                    if info["min"] < 1e9:
+                        approach.append(f"{side}->{name} closest {info['min'] * 100:.1f} cm at gripper z {info['gz']:.3f} m")
+            if approach:
+                print("  grip approach: " + " | ".join(approach), flush=True)
             print(f"  {verdict}: {detail}", flush=True)
             print(f"  elapsed {elapsed:.0f}s · video {'saved' if got_video else 'none'} · "
                   f"proof {'saved' if made else 'none'} · gui shot {'saved' if shot else 'none'}", flush=True)
@@ -294,6 +390,7 @@ def main():
                      f"    {detail}\n"
                      f"    grasp contacts while closing: left {grasp['left']}, right {grasp['right']}, "
                      f"objects {touching}\n"
+                     f"    grip approach: {' | '.join(approach) if approach else 'no distance recorded'}\n"
                      f"    elapsed: {elapsed:.0f}s ({'GUI' if args.viewer else 'headless'}), "
                      f"actions {args.actions}/request, seconds {args.seconds:.0f}\n"
                      f"    video: {recorder.video if got_video else 'not recorded'}\n"
