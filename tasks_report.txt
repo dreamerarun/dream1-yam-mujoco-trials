@@ -150,3 +150,33 @@ that no contact occurred. The corrected probe is used from trial 4 onward; conta
     video: yam_check/video/pick_up_the_banana_then_pick_up_the_apple_1_pick5.mp4
     proof: yam_check/trials/pick_up_the_banana_then_pick_up_the_apple_1_pick5_proof.png
 
+[02:36:13] pick up the banana and put it in the bowl
+    verdict: FAIL
+    banana -> bowl: xy 7.9 cm (limit 6), dz +5.8 cm, moved 10.1 cm
+    grasp contacts while closing: left 0, right 4626, objects banana
+    grip approach: left->apple closest 23.4 cm at gripper z 0.928 m | left->orange closest 36.1 cm at gripper z 0.928 m | left->banana closest 32.8 cm at gripper z 0.969 m | right->apple closest 20.9 cm at gripper z 0.851 m | right->orange closest 12.4 cm at gripper z 0.861 m | right->banana closest 3.8 cm at gripper z 0.806 m
+    SCRIPTED ASSIST: descent 3 mm applied 0x left / 527x right | grip latched False left / True right (0/2072 steps held shut)
+    elapsed: 182s (GUI), actions 48/request, seconds 180
+    video: yam_check/video/pick_up_the_banana_and_put_it_in_the_bowl_1_pickplace1.mp4
+    proof: yam_check/trials/pick_up_the_banana_and_put_it_in_the_bowl_1_pickplace1_proof.png
+
+[02:39:16] pick up the apple and put it on the plate
+    verdict: FAIL
+    apple -> plate: xy 21.4 cm (limit 7), dz +3.8 cm, moved 21.8 cm
+    grasp contacts while closing: left 0, right 0, objects nothing
+    grip approach: no distance recorded
+    SCRIPTED ASSIST: descent 3 mm applied 0x left / 0x right | grip latched True left / False right (1919/0 steps held shut)
+    elapsed: 182s (GUI), actions 48/request, seconds 180
+    video: yam_check/video/pick_up_the_apple_and_put_it_on_the_plate_1_pickplace1.mp4
+    proof: yam_check/trials/pick_up_the_apple_and_put_it_on_the_plate_1_pickplace1_proof.png
+
+[02:43:24] pick up the banana and put it in the bowl
+    verdict: SUCCESS
+    banana -> bowl: xy 2.5 cm (limit 6), dz +5.8 cm, moved 16.6 cm
+    grasp contacts while closing: left 0, right 8436, objects banana, orange
+    grip approach: left->apple closest 23.0 cm at gripper z 0.930 m | left->orange closest 21.3 cm at gripper z 0.981 m | left->banana closest 33.5 cm at gripper z 0.936 m | right->apple closest 18.4 cm at gripper z 0.822 m | right->orange closest 4.6 cm at gripper z 0.793 m | right->banana closest 0.3 cm at gripper z 0.814 m
+    SCRIPTED ASSIST: descent 3 mm applied 0x left / 1012x right | grip latched False left / True right (0/2267 steps held shut)
+    elapsed: 181s (GUI), actions 48/request, seconds 180
+    video: yam_check/video/pick_up_the_banana_and_put_it_in_the_bowl_1_place6.mp4
+    proof: yam_check/trials/pick_up_the_banana_and_put_it_in_the_bowl_1_place6_proof.png
+
