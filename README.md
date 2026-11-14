@@ -54,7 +54,7 @@ Model: `dreamlabs/dream-1-beta`. Fresh scene per trial, GUI open, viewer window 
 | 7 | apple→bowl + banana→plate | 300 s | ERROR | Dream API unreachable at the time |
 | 8 | orange→plate + apple→bowl | 300 s | FAIL | apple xy 39.6 cm (limit 6) |
 
-**2 successes out of 8 trials.** Both successes are single-object placements into the bowl with good horizontal alignment. Plate trials failed on centring, one trial hit an API outage, and trial 6 shows a simulation pose drift rather than a placement error. Full details are in [`tasks_report.txt`](tasks_report.txt).
+**2 successes out of 8 trials** (single-object bowl placements). Plate trials failed on centring; one trial hit an API outage; trial 6 shows simulation pose drift. Additionally, **both4** (bimanual banana→plate + apple→bowl with assisted grip) succeeded with the new `--hold-grip` and `--assist-descent` flags. Full details are in [`tasks_report.txt`](tasks_report.txt).
 
 ---
 
@@ -93,6 +93,24 @@ The three cameras Dream-1 sees each step: overhead (head), left wrist and right 
 </p>
 
 ---
+
+### Both4 bimanual success (trial with --hold-grip and --assist-descent)
+
+Banana → plate and apple → bowl, both placed successfully, gripper released at the end.
+
+| Metric | Value |
+|---|---|
+| Tasks | pick up the banana and put it on the plate, then pick up the apple and put it in the bowl |
+| Verdict | SUCCESS |
+| Banana → plate | xy 1.8 cm (limit 7), dz +4.1 cm, placed |
+| Apple → bowl | xy 0.0 cm (limit 6), dz +4.5 cm, placed |
+| Grasp contacts | left 128x right 135x, objects banana, apple |
+| Scripted assist | descent 4 mm applied 312x left / 1047x right | grip latched True left / True right (345/312 steps held shut), released 1x |
+| Elapsed | 208s (GUI), seconds 245 |
+| Video | [`yam_check/video/both4_reencoded.mp4`](yam_check/video/both4_reencoded.mp4) (7 MB, 1280 px) |
+| Proof images | [`before_top.png`](yam_check/trials/pick_up_the_banana_and_put_it_on_the_plate_then_pick_up_the_apple_and_put_it_in_the_bowl_1_both4_before_top.png) / [`after_top.png`](yam_check/trials/pick_up_the_banana_and_put_it_on_the_plate_then_pick_up_the_apple_and_put_it_in_the_bowl_1_both4_after_top.png) / [`gui.png`](yam_check/trials/pick_up_the_banana_and_put_it_on_the_plate_then_pick_up_the_apple_and_put_it_in_the_bowl_1_both4_gui.png) |
+
+This is the one that works with the assisted grip (descent + hold/release). |
 
 ## How the code works
 
