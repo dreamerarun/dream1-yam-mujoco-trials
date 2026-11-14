@@ -22,7 +22,7 @@ def gh(method, path, payload=None):
     req.add_header("Accept", "application/vnd.github+json")
     if data:
         req.add_header("Content-Type", "application/json")
-    return urllib.request.urlopen(req, timeout=180)
+    return urllib.request.urlopen(req, timeout=600)
 
 
 def remote_sha(path):
